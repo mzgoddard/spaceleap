@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Space Leap</title>
+    <style>
+      body { margin: 0; background: black; width: 100%; height: 100%; overflow: hidden; }
+      textarea { position: absolute; z-index: 10; }
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }
+      div.emscripten_border { border: 1px solid black; }
+      div.vertical-center { position: absolute; width: 100%; height: 100%; transform: translateY(50%); -webkit-transform: translateY(50%); }
+      div.vertical-center > * { transform: translateY(-50%); -webkit-transform: translateY(-50%); }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; width: 100%; }
+      .title {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        color: white;
+        text-align: center;
+        font-size: 3em;
+        height: 80px;
+      }
+      .story-start {
+        position: fixed;
+        top: 100px;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .story-start > div {
+        display: inline-block;
+        width: 450px;
+        color: white;
+        text-align: left;
+        background: rgba(16,8,4,0.9);
+        padding: 10px;
+      }
+      .story-end {
+        display: none;
+        position: fixed;
+        top: 100px;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .story-end > div {
+        display: inline-block;
+        width: 450px;
+        color: white;
+        text-align: left;
+        background: rgba(16,8,4,0.9);
+        padding: 10px;
+      }
+      .live-score {
+        display: none;
+        position: fixed;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .live-score > div {
+        display: inline-block;
+        width: 450px;
+        color: white;
+        text-align: left;
+        background: rgba(16,8,4,0.9);
+        padding: 10px;
+      }
+      .score > div {
+        float: right;
+        display: inline-block;
+      }
+      .click-to-dismiss {
+        text-align: center;
+      }
+      a {
+        pointer-events: initial;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="emscripten" id="status">Downloading...</div>
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" hidden=1></progress>  
+    </div>
+    <div class="vertical-center">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <textarea id="output" style="display:none"></textarea>
+    <script type='text/javascript'>
+      // connect to canvas
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('output');
+          element.value = ''; // clear browser cache
+          return function(text) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+            // These replacements are necessary if you render to raw HTML
+            //text = text.replace(/&/g, "&amp;");
+            //text = text.replace(/</g, "&lt;");
+            //text = text.replace(/>/g, "&gt;");
+            //text = text.replace('\n', '<br>', 'g');
+            element.value += text + "\n";
+            element.scrollTop = 99999; // focus on bottom
+          };
+        })(),
+        printErr: function(text) {
+          // text = Array.prototype.slice.call(arguments).join(' ');
+          // console.error(text);
+        },
+        canvas: document.getElementById('canvas'),
+        setStatus: function(text) {
+          if (Module.setStatus.interval) clearInterval(Module.setStatus.interval);
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var statusElement = document.getElementById('status');
+          var progressElement = document.getElementById('progress');
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+    </script>
+    <script src="spaceleaper.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      Module.ccall('pauseSpaceLeaper','undefined',[],[]);
+    </script>
+    <div class="story-start"><div>
+      <p>Space Anomaly 3122D - Report 5</p>
+
+      <p>The hole in space we found was not what we expected. We had sent probes through to here and thoroughly analyzed the data that came back. It was confusing though. The strange thing was, the only observable matter visibly was that that the probe was at that time touching.</p>
+
+      <p>Eventually each probe returned to us, but I have not been able to discover any exit. My oxygen supply is running short and it is growing tough to find resources to power the oxygen scrubber that I have left at the location I entered this exotic space at. I fear I will die here.</p>
+
+      <p>However I am not letting this get me down. This is an amazing place I never would have imagined that I would get to explore. I will continue to collect data and strive to return so that I may give my report in person instead of these datams I leave for whoever may ... well, best not jinx myself.</p>
+
+      <p>- Theresa<br>
+      -- END OF ENTRY --</p>
+
+      <div class="click-to-dismiss">Click To Dismiss</div>
+    </div></div>
+    <div class="title">
+      Space Leap
+    </div>
+    <div class="story-end"><div>
+      <p>Space Anomaly 3122D - Report 6</p>
+
+      <p>Time is short ...</p>
+
+      <p>I hope you find this capsule.</p>
+
+      <p>It feels like I can taste the vacuum outside, but I know my brain is just playing tricks on me.</p>
+
+      <p>- Theresa<br>
+      -- END OF ENTRY --</p>
+
+      <div class="final-score">
+        <div class="score visited">Visited <div>0</div></div>
+        <div class="score resource">Resource Total <div>0</div></div>
+        <div class="score survived-for">Survived For <div>0:00.00</div></div>
+      </div>
+
+      <div class="click-to-dismiss"><a href="#" onclick="location.reload();return false;">Click to Play Again</a></div>
+    </div></div>
+    <div class="live-score"><div>
+      <div class="score visited">Visited <div>0</div></div>
+      <div class="score resource">Resource Total <div>0</div></div>
+      <div class="score survived-for">Since last report <div>0:00.00</div></div>
+    </div></div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+      var alive = true;
+      var survivedFor = 0;
+      var lastFrame = 0;
+
+      function padNubmer( n ) {
+        n = n.toString();
+        if ( n.length === 1 ) {
+          return '0' + n;
+        }
+        return n;
+      }
+
+      $('body').click(function hideStart() {
+        $('.story-start, .title').animate({'opacity':0},1000);
+        $('body').off('click', hideStart);
+        Module.ccall('resumeSpaceLeaper','undefined',[],[]);
+        $('.live-score').show().css('opacity','0').animate({'opacity':1},1000);
+
+        Module.requestAnimationFrame(function time(){
+          if ( alive ) {
+            Module.requestAnimationFrame(time);
+
+            var now = Date.now();
+            if ( now - lastFrame < 1000 ) {
+              survivedFor += ( now - lastFrame ) / 1000;
+
+              $( '.survived-for > div' ).text(
+                padNubmer( Math.floor( survivedFor / 60 )) + ':' +
+                  padNubmer( Math.floor( survivedFor % 60 )) + '.' +
+                  ( survivedFor % 1 ).toString().substring( 2, 4 ) );
+            }
+            lastFrame = now;
+          }
+        });
+      });
+
+      var once = true;
+      Module.endCallback = function() {
+        if ( once ) {
+          alive = false;
+          $('.story-end, .title')
+            .show()
+            .css('opacity', '0')
+            .animate({'opacity':1}, 1000);
+          $('.live-score').animate({'opacity':0},1000);
+        }
+        once = false;
+      };
+      Module.visitedCallback = function( visits ) {
+        $('.visited > div').text( visits );
+      };
+      Module.resourceCallback = function( resource ) {
+        $('.resource > div').text( resource );
+      }
+      Module.ccall(
+        'setSpaceLeaperEndCallback',
+        'undefined',
+        ['number'],
+        [Runtime.addFunction(Module.endCallback)]
+      );
+      Module.ccall(
+        'setSpaceLeaperVisitedCallback',
+        'undefined',
+        ['number'],
+        [Runtime.addFunction(Module.visitedCallback)]
+      );
+      Module.ccall(
+        'setSpaceLeaperResourceCallback',
+        'undefined',
+        ['number'],
+        [Runtime.addFunction(Module.resourceCallback)]
+      );
+    </script>
+  </body>
+</html>
