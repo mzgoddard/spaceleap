@@ -82,6 +82,21 @@
         color: white;
       }
     </style>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-35885139-1']);
+      _gaq.push(['_setDomainName', 'github.com']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
   </head>
   <body>
     <div class="emscripten" id="status">Downloading...</div>
@@ -190,8 +205,11 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
       var alive = true;
-      var survivedFor = 0;
       var lastFrame = 0;
+      var survivedFor = 0;
+
+      var resource = 0;
+      var visits = 0;
 
       function padNubmer( n ) {
         n = n.toString();
@@ -223,6 +241,8 @@
             lastFrame = now;
           }
         });
+
+        _gaq.push(['_trackEvent','SpaceLeap','GameState','Start']);
       });
 
       var once = true;
@@ -234,13 +254,22 @@
             .css('opacity', '0')
             .animate({'opacity':1}, 1000);
           $('.live-score').animate({'opacity':0},1000);
+
+          _gaq.push(['_trackEvent','SpaceLeap','GameState','End']);
+          _gaq.push(['_trackEvent','SpaceLeap','Score','Visits',visits]);
+          _gaq.push(['_trackEvent','SpaceLeap','Score','Resources',resources]);
+          _gaq.push(
+            ['_trackEvent','SpaceLeap','Score','SurvivedFor',survivedFor]
+          );
         }
         once = false;
       };
-      Module.visitedCallback = function( visits ) {
+      Module.visitedCallback = function( _visits ) {
+        visits = _visits;
         $('.visited > div').text( visits );
       };
-      Module.resourceCallback = function( resource ) {
+      Module.resourceCallback = function( _resource ) {
+        resource = _resource;
         $('.resource > div').text( resource );
       }
       Module.ccall(
@@ -261,6 +290,8 @@
         ['number'],
         [Runtime.addFunction(Module.resourceCallback)]
       );
+
+      _gaq.push(['_trackEvent','SpaceLeap','Version','1.0']);
     </script>
   </body>
 </html>
