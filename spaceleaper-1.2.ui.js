@@ -85,4 +85,4 @@ Module.ccall(
   [Runtime.addFunction(Module.resourceCallback)]
 );
 
-_gaq.push(['_trackEvent','SpaceLeap','Version','1.0']);
+_gaq.push(['_trackEvent','SpaceLeap','Version','1.2']);
